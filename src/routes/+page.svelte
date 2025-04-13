@@ -95,7 +95,7 @@ async function handleSubmit(event) {
   try {
     await addDoc(collection(db, "reportes"), nuevoTest);
     tests = [...tests, nuevoTest];
-    alert("¡Gracias por compartir! Con tu contribución, nos protegemos entre todos");
+    alert("¡Gracias por compartir! Con tu contribución, nos protegemos entre todos 💜");
   } catch (e) {
     console.error("Error al guardar en Firestore:", e);
     alert("Ocurrió un error al guardar el reporte");
@@ -115,29 +115,6 @@ async function handleSubmit(event) {
 }
 ;
 
-    try {
-      await addDoc(collection(db, "reportes"), nuevoTest);
-      console.log("Guardado en Firestore ✅");
-
-      tests = [...tests, nuevoTest]; // Se agrega también al frontend
-    } catch (error) {
-      console.error("Error al guardar en Firestore ❌", error);
-    }
-
-    // Resetear formulario
-    sustancia = "";
-    foto = null;
-    reactivo = "";
-    color = "";
-    lugar = "";
-    experiencia = "";
-    confirmacion = "";
-    descripcionVisual = "";
-    intentoFallido = false;
-    preview = null;
-
-    alert("¡Gracias por compartir! Con tu contribución, nos protegemos entre todos 💜");
-  
 </script>
 
 <svelte:head>
@@ -348,8 +325,17 @@ async function handleSubmit(event) {
 <section id="acerca" class="pt-10 pb-16">
   <div class="max-w-3xl mx-auto text-center">
     <h2 class="text-2xl font-semibold mb-4">Sobre el Proyecto</h2>
-    <p class="text-gray-600">
-      Este proyecto busca reducir riesgos dando un espacio para compartir resultados de testeo y experiencias con sustancias.
+    <p class="text-gray-600 mb-4">
+      Este proyecto tiene como objetivo contribuir a la reducción de riesgos mediante la recopilación y difusión de experiencias y resultados de pruebas con reactivos en sustancias psicoactivas.
+    </p>
+    <p class="text-sm text-gray-500 italic">
+      ⚠️ Aviso legal: En México, conforme a lo establecido por la Ley General de Salud y el Código Penal Federal, la producción, posesión, transporte o distribución de diversas sustancias, incluyendo MDMA, está tipificada como delito, salvo en los casos expresamente autorizados por la ley, como investigaciones científicas debidamente reguladas.
+    </p>
+    <p class="text-sm text-gray-500 italic mt-2">
+      Esta plataforma tiene un carácter informativo y preventivo. No promueve el uso de sustancias ilegales ni pretende incentivar la comisión de conductas ilícitas. Si a pesar de ello una persona decide consumir, es fundamental que lo haga con base en información clara, confiable y orientada a minimizar riesgos.
+    </p>
+    <p class="text-sm text-gray-500 italic mt-2">
+      Los creadores de este sitio declinan toda responsabilidad, penal, civil o administrativa, por los posibles efectos derivados del uso directo o indirecto de la información contenida en esta página.
     </p>
   </div>
 </section>
