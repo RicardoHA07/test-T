@@ -1,7 +1,11 @@
 <script>
+  import { collection, getDocs, addDoc } from 'firebase/firestore';
+  import { db } from '$lib/firebase';
   import Navbar from '$lib/components/Navbar.svelte';
   import "../app.css";
+  import { onMount } from 'svelte';
 
+  // Variables del formulario
   let sustancia = "";
   let foto = null;
   let reactivo = "";
@@ -17,88 +21,88 @@
   let inputColor;
   let selectConfirmacion;
 
-
+  // Lista de reactivos y reportes
   const reactivos = ["Marquis", "Mecke", "Ehrlich", "Otros"];
+  let tests = [];
 
-  function handleSubmit(event) {
-      event.preventDefault();
-
-    if (!formularioValido()) {
-  intentoFallido = true;
-
-  if (!sustancia.trim()) {
-    inputSustancia.focus();
-  } else if (!reactivo.trim()) {
-    selectReactivo.focus();
-  } else if (!color.trim()) {
-    inputColor.focus();
-  } else if (!confirmacion.trim()) {
-    selectConfirmacion.focus();
+  // ✅ Cargar reportes al iniciar
+  async function cargarReportes() {
+    const querySnapshot = await getDocs(collection(db, "reportes"));
+    tests = querySnapshot.docs.map(doc => doc.data());
+    console.log("Reportes cargados:", tests);
   }
 
-  return;
-}
+  onMount(() => {
+    cargarReportes();
+  });
 
-  const nuevoTest = {
-    sustancia,
-    foto: foto ? URL.createObjectURL(foto) : "https://via.placeholder.com/400x200?text=Sin+imagen",
-    reactivo,
-    color,
-    lugar,
-    experiencia,
-    confirmacion,
-    descripcionVisual
-   
+  // ✅ Validación del formulario
+  function formularioValido() {
+    return (
+      sustancia.trim() &&
+      reactivo.trim() &&
+      color.trim() &&
+      confirmacion.trim()
+    );
+  }
 
-  };
+  // ✅ Envío del formulario
+  async function handleSubmit(event) {
+    event.preventDefault();
 
-  tests = [...tests, nuevoTest]; // Agrega el nuevo test a la galería
-  
-  // Limpiar formulario
-  sustancia = "";
-  foto = null;
-  reactivo = "";
-  color = "";
-  lugar = "";
-  experiencia = "";
-  confirmacion = "";
-  descripcionVisual = "";
-  intentoFallido = false;
+    if (!formularioValido()) {
+      intentoFallido = true;
 
-  preview = null;
+      if (!sustancia.trim()) {
+        inputSustancia.focus();
+      } else if (!reactivo.trim()) {
+        selectReactivo.focus();
+      } else if (!color.trim()) {
+        inputColor.focus();
+      } else if (!confirmacion.trim()) {
+        selectConfirmacion.focus();
+      }
 
-
-  alert("¡Gracias por compartir! Con tu contribución, nos protegemos entre todos");
-}
-function formularioValido() {
-  return (
-    sustancia.trim() &&
-    reactivo.trim() &&
-    color.trim() &&
-    confirmacion.trim()
-  );
-}
-     let tests = [
-     {
-    sustancia: "LSD",
-    foto: "https://via.placeholder.com/400x200?text=Foto+1",
-    reactivo: "Marquis",
-    color: "Morado oscuro",
-    lugar: "CDMX - Evento",
-    experiencia: "Buen viaje...",
-    confirmacion: "Sí, coincide" 
-    },
-    {
-      sustancia: "MDMA",
-      foto: "https://via.placeholder.com/400x200?text=Foto+2",
-      reactivo: "Mecke",
-      color: "Verde intenso",
-      lugar: "Guadalajara",
-      experiencia: "Relajado, acompañado de buena música, no hubo malestar.",
-      confirmacion: "❌ No, era otra sustancia"
+      return;
     }
-  ];
+
+    const nuevoTest = {
+      sustancia,
+      foto: preview || "https://via.placeholder.com/400x200?text=Sin+imagen",
+      reactivo,
+      color,
+      lugar,
+      experiencia,
+      confirmacion,
+      descripcionVisual,
+      fecha: new Date()
+    };
+
+    try {
+      await addDoc(collection(db, "reportes"), nuevoTest);
+      console.log("Guardado en Firestore ✅");
+
+      tests = [...tests, nuevoTest]; // Se agrega también al frontend
+    } catch (error) {
+      console.error("Error al guardar en Firestore ❌", error);
+    }
+
+    // Resetear formulario
+    sustancia = "";
+    foto = null;
+    reactivo = "";
+    color = "";
+    lugar = "";
+    experiencia = "";
+    confirmacion = "";
+    descripcionVisual = "";
+    intentoFallido = false;
+    preview = null;
+
+    alert("¡Gracias por compartir! Con tu contribución, nos protegemos entre todos 💜");
+  }
 </script>
+
 <svelte:head>
   <title>Testea y Trippea</title>
 </svelte:head>
