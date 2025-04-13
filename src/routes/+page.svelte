@@ -47,36 +47,73 @@
   }
 
   // ✅ Envío del formulario
-  async function handleSubmit(event) {
-    event.preventDefault();
+  import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
-    if (!formularioValido()) {
-      intentoFallido = true;
+async function handleSubmit(event) {
+  event.preventDefault();
 
-      if (!sustancia.trim()) {
-        inputSustancia.focus();
-      } else if (!reactivo.trim()) {
-        selectReactivo.focus();
-      } else if (!color.trim()) {
-        inputColor.focus();
-      } else if (!confirmacion.trim()) {
-        selectConfirmacion.focus();
-      }
+  if (!formularioValido()) {
+    intentoFallido = true;
 
-      return;
+    if (!sustancia.trim()) {
+      inputSustancia.focus();
+    } else if (!reactivo.trim()) {
+      selectReactivo.focus();
+    } else if (!color.trim()) {
+      inputColor.focus();
+    } else if (!confirmacion.trim()) {
+      selectConfirmacion.focus();
     }
 
-    const nuevoTest = {
-      sustancia,
-      foto: preview || "https://via.placeholder.com/400x200?text=Sin+imagen",
-      reactivo,
-      color,
-      lugar,
-      experiencia,
-      confirmacion,
-      descripcionVisual,
-      fecha: new Date()
-    };
+    return;
+  }
+
+  let imageUrl = "https://via.placeholder.com/400x200?text=Sin+imagen";
+
+  if (foto) {
+    try {
+      const storageRef = ref(storage, `fotos/${Date.now()}_${foto.name}`);
+      await uploadBytes(storageRef, foto);
+      imageUrl = await getDownloadURL(storageRef);
+    } catch (error) {
+      console.error("Error subiendo la imagen:", error);
+      alert("Hubo un problema al subir la imagen. Se usará una por defecto.");
+    }
+  }
+
+  const nuevoTest = {
+    sustancia,
+    foto: imageUrl,
+    reactivo,
+    color,
+    lugar,
+    experiencia,
+    confirmacion,
+    descripcionVisual
+  };
+
+  try {
+    await addDoc(collection(db, "reportes"), nuevoTest);
+    tests = [...tests, nuevoTest];
+    alert("¡Gracias por compartir! Con tu contribución, nos protegemos entre todos");
+  } catch (e) {
+    console.error("Error al guardar en Firestore:", e);
+    alert("Ocurrió un error al guardar el reporte");
+  }
+
+  // Limpiar formulario
+  sustancia = "";
+  foto = null;
+  reactivo = "";
+  color = "";
+  lugar = "";
+  experiencia = "";
+  confirmacion = "";
+  descripcionVisual = "";
+  intentoFallido = false;
+  preview = null;
+}
+;
 
     try {
       await addDoc(collection(db, "reportes"), nuevoTest);
@@ -100,7 +137,7 @@
     preview = null;
 
     alert("¡Gracias por compartir! Con tu contribución, nos protegemos entre todos 💜");
-  }
+  
 </script>
 
 <svelte:head>
