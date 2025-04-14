@@ -70,7 +70,7 @@ async function handleSubmit(event) {
     return;
   }
 
-  let imageUrl = "https://via.placeholder.com/400x200?text=Sin+imagen";
+  let imageUrl = "https://dummyimage.com/400x200/cccccc/000000&text=Sin+imagen";
 
   if (foto) {
     try {
