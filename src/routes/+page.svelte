@@ -71,7 +71,7 @@ async function handleSubmit(event) {
   }
 
 
-  let imageUrl = "https://dummyimage.com/400x200/cccccc/000000&text=Sin+imagen";
+  let imageUrl = "https://dummyimage.com/400x200/cccccc/000000&text=Sin+imagen"; //comentario
 
   if (foto) {
     try {
