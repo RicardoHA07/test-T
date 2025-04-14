@@ -4,6 +4,8 @@
   import Navbar from '$lib/components/Navbar.svelte';
   import "../app.css";
   import { onMount } from 'svelte';
+  import { storage } from '$lib/firebase';
+
 
   // Variables del formulario
   let sustancia = "";
